@@ -1,58 +1,67 @@
 ## app.R ##
 library(shiny)
 library(shinydashboard)
+library(shinyevents)
 
 ui <- dashboardPage(
     dashboardHeader(),
-    dashboardSidebar(),
+    dashboardSidebar(disable = TRUE),
     dashboardBody(
         fluidRow(
-            box(title = "Box title", "Box content"),
-            box(status = "warning", "Box content")
-        ),
-        
-        fluidRow(
-            box(
-                title = "Title 1", width = 4, solidHeader = TRUE, status = "primary",
-                "Box content"
+            column(width = 6,
+                box(
+                    textInput("text", "Text"),
+                    selectInput("dropdown", "Dropdown", c("one", "two", "three")),
+                    sliderInput("slider", "Slider", 1, 10, 5),
+                    actionButton("button", "Button")
+                ),
+                box(
+                    plotOutput("plot")
+                )
             ),
-            box(
-                title = "Title 2", width = 4, solidHeader = TRUE,
-                "Box content"
-            ),
-            box(
-                title = "Title 1", width = 4, solidHeader = TRUE, status = "warning",
-                "Box content"
-            )
-        ),
-        
-        fluidRow(
-            box(
-                width = 4, background = "black",
-                "A box with a solid black background"
-            ),
-            box(
-                title = "Title 5", width = 4, background = "light-blue",
-                "A box with a solid light-blue background"
-            ),
-            box(
-                title = "Title 6",width = 4, background = "maroon",
-                "A box with a solid maroon background"
+            column(width = 6,
+                box(tableOutput("events"))    
             )
         )
     )
 )
 
 server <- function(input, output, session) {
+    
+    # shinyevents tracking main section -----------------------------
     ## Initialized a new shinyevents variable, we'll call it `tracker`
     tracker <- shiny_events_to_csv()
     ## A simple entry that logs when the app is initially started
     tracker$event("app_initiated")
     ## Changes to inputs can be tracked using shiny::observeEvent()
-    #observeEvent(input$bins, tracker$event("bin_slider", input$bins))
+    observeEvent(input$text, tracker$event("text_change", input$text), ignoreInit = TRUE)
+    observeEvent(input$button, tracker$event("button_clicked"), ignoreInit = TRUE)
+    observeEvent(input$dropdown, tracker$event("dropdown_changed", input$dropdown), ignoreInit = TRUE)
+    observeEvent(input$slider, tracker$event("slider_changed", input$slider), ignoreInit = TRUE)
     ## session$onSessionEnded allows to track when the session was ended
     session$onSessionEnded(function() tracker$event("close_app"))
     
+    output$plot <- renderPlot({
+        input$button
+        rnorm_size <- 1000000 * isolate(input$slider)
+        tracker$event("plot_start", rnorm_size)
+        d <- rnorm(rnorm_size)
+        hist(d, main = paste("Histogram of rnorm() size", rnorm_size))
+        tracker$event("plot_complete")
+    })
+    
+    event_data <- reactiveFileReader(1000, session, "shiny-events.csv", read.csv, stringsAsFactors = FALSE,
+                       col.names = c("guid", "app", "activity", "value", "datetime"))
+    
+    output$events <- renderTable({
+        ce <- event_data()
+        ce$guid <- paste0(substr(ce$guid, 1, 9), "...")
+        ce$time <- substr(ce$datetime, 12, 19)
+        ce$date <- substr(ce$datetime, 1, 10)
+        ce <- ce[nrow(ce):1, ]
+        ce <- ce[, c("time", "date", "guid", "activity", "value", "app")]
+        ce
+    })
 }
 
 shinyApp(ui, server)
