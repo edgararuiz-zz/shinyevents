@@ -79,3 +79,27 @@ event_to_log <- function(sessionid, app, activity,
     append = TRUE
   )
 }
+
+# dbi -------------------------------------------
+#' @export
+shiny_events_to_dbi <- function(app = basename(getwd()), table = "shinyevents", connection = NULL) {
+  se <- shiny_events(app = app)
+  se$event <- function(activity = "", value = "") {
+    entry <- se$entry(activity = activity, value = value)
+    event_to_dbi(
+      connection = connection,
+      table = table,
+      entry = entry
+    )
+  }
+  se
+}
+
+event_to_dbi <- function(connection, table, entry){
+  DBI::dbWriteTable(
+    conn = connection,
+    name = table, 
+    value = as.data.frame(entry, stringsAsFactors = FALSE),
+    append = TRUE
+  )  
+}
