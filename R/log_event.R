@@ -1,27 +1,37 @@
-session_setup <- rlang::new_environment()
-session_setup$init <- FALSE
-session_setup$backend <- NULL
-session_setup$guid <- NULL
-session_setup$app <- NULL
-
 #' @export
-shinyevents_init <- function(app, backend = c("file", "database", "plumber")) {
-  session_setup$guid <- uuid::UUIDgenerate()
-  session_setup$backend <- backend
-  session_setup$app <- app
-  session_setup$init <- TRUE
+shiny_events <- function(app = basename(getwd())) {
+  se <- rlang::new_environment()
+  se$guid <- uuid::UUIDgenerate()
+  se$app <- app
+  se$entry <- function(activity = "", value = "") {
+    list(
+      guid = se$guid,
+      app = se$app,
+      datetime = as.character(Sys.time()),
+      activity = activity,
+      value = value
+    )
+  }
+  se$event <- function(activity = "", value = "") {
+    stop("Recording mechanism has no been defined")
+  }
+  se
 }
 
-get_session_uuid <- function() session_setup$guid
-get_session_backend <- function() session_setup$backend
-session_init <- function() session_setup$init
-
 #' @export
-get_session_setup <- function() session_setup
-
-#' @export
-shinyevents_log <- function(activity, value) {
-  
+shiny_events_to_file <- function(app = basename(getwd())) {
+  se <- shiny_events(app = app)
+  se$event <- function(activity = "", value = "") {
+    entry <- se$entry(activity = activity, value = value)
+    event_to_file(
+      sessionid = entry$guid,
+      app =entry$app,
+      activity = entry$activity,
+      value = entry$value,
+      time = entry$datetime
+    )
+  }
+  se
 }
 
 event_to_file <- function(sessionid = NULL, app = NULL, 
