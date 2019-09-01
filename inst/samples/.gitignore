@@ -1,3 +1,4 @@
 rsconnect/
 *.csv
 *.log
+*.db
