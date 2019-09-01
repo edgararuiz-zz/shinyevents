@@ -1,0 +1,61 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+# shinyevents
+
+<!-- badges: start -->
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+<!-- badges: end -->
+
+The goal of `shinyevents` is to provide an easy way to log events ocurring within a Shiny app.  The logged events can later be analyzed to help determine things such possible improvement oportunities for an app, as well how end-users actually interact with the app itself.
+
+## Installation
+
+The development version pf `shinyevents` is available on [GitHub](https://github.com/):
+
+``` r
+# install.packages("remotes")
+remotes::install_github("edgararuiz/shinyevents")
+```
+
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example}
+library(shinyevents)
+
+tracker <- shiny_events_to_csv()
+```
+
+```{r}
+tracker$app
+tracker$guid
+```
+
+
+## Example
+
+```{r, eval = FALSE}
+shiny::runApp(
+  system.file(
+    "samples", "shinydashboard-db", 
+    package = "shinyevents"
+    ), 
+  display.mode = "normal"
+  )
+```
+
+
+
+
