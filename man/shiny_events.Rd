@@ -16,18 +16,3 @@ An environment variable containing: a GUID, the name of the app, entry() functio
 Customize the output or add a new target file (beyond CSV, log or Database).
 To do that, override the `event()` function after assigning it to a variable.
 }
-\examples{
-
-tracker <- shiny_events("example-app")
-tracker$event <- function(activity = "", value = "") {
-  entry <- tracker$entry(activity = activity, value = value)
-  cat(
-    paste(
-      entry$guid, entry$datetime, entry$app, entry$activity, entry$value, sep = "|"
-    ),
-    file = "shinyevents-pipe.txt", append = TRUE
-  )
-}
-tracker$event("slider", "10")
-readLines("shinyevents-pipe.txt")
-}

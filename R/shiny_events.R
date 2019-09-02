@@ -10,18 +10,19 @@
 #'
 #' @examples
 #'
+#' file_name <- tempfile(fileext = "txt")
 #' tracker <- shiny_events("example-app")
 #' tracker$event <- function(activity = "", value = "") {
 #'   entry <- tracker$entry(activity = activity, value = value)
 #'   cat(
 #'     paste(
-#'       entry$guid, entry$datetime, entry$app, entry$activity, entry$value, sep = "|"
+#'       entry$guid, entry$datetime, entry$app, entry$activity, entry$value, "\n, sep = "|"
 #'     ),
-#'     file = "shinyevents-pipe.txt", append = TRUE
+#'     file = file_name, append = TRUE
 #'   )
 #' }
 #' tracker$event("slider", "10")
-#' readLines("shinyevents-pipe.txt")
+#' readLines(file_name)
 #' @export
 shiny_events <- function(app = basename(getwd())) {
   se <- rlang::new_environment()
@@ -155,20 +156,14 @@ shiny_events_to_dbi <- function(app = basename(getwd()), table = "shinyevents", 
   se <- shiny_events(app = app)
   se$event <- function(activity = "", value = "") {
     entry <- se$entry(activity = activity, value = value)
-    event_to_dbi(
-      connection = connection,
-      table = table,
-      entry = entry
-    )
+    event_to_dbi(connection = connection, 
+                 table = table, entry = entry)
   }
   se
 }
 
 event_to_dbi <- function(connection, table, entry) {
   DBI::dbWriteTable(
-    conn = connection,
-    name = table,
-    value = as.data.frame(entry, stringsAsFactors = FALSE),
-    append = TRUE
-  )
+    conn = connection, name = table, append = TRUE,
+    value = as.data.frame(entry, stringsAsFactors = FALSE))
 }
