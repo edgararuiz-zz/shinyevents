@@ -9,6 +9,8 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![Travis build
 status](https://travis-ci.org/edgararuiz/shinyevents.svg?branch=master)](https://travis-ci.org/edgararuiz/shinyevents)
+[![Codecov test
+coverage](https://codecov.io/gh/edgararuiz/shinyevents/branch/master/graph/badge.svg)](https://codecov.io/gh/edgararuiz/shinyevents?branch=master)
 <!-- badges: end -->
 
   - [Installation](#installation)
@@ -71,7 +73,7 @@ can be accessed in one of many ways. In this case we’ll just use
 
 ``` r
 readLines("shiny-events.log")
-#> [1] "2019-09-02 16:15:53 CDT INFO shinyevents 66334595-0a8a-480b-82fd-e07e3db65515 example readme "
+#> [1] "2019-09-02 16:19:51 CDT INFO shinyevents 85743fad-3b4a-44c3-be8e-af42686b1a3f example readme "
 ```
 
 A Globally Unique Identifier, or GUID, is created by
@@ -87,10 +89,10 @@ tracker$event("stop_app")
 
 ``` r
 readLines("shiny-events.log")
-#> [1] "2019-09-02 16:15:53 CDT INFO shinyevents 66334595-0a8a-480b-82fd-e07e3db65515 example readme "
-#> [2] "2019-09-02 16:15:53 CDT INFO shinyevents 66334595-0a8a-480b-82fd-e07e3db65515 start_app  "    
-#> [3] "2019-09-02 16:15:53 CDT INFO shinyevents 66334595-0a8a-480b-82fd-e07e3db65515 slider 3 "      
-#> [4] "2019-09-02 16:15:53 CDT INFO shinyevents 66334595-0a8a-480b-82fd-e07e3db65515 stop_app  "
+#> [1] "2019-09-02 16:19:51 CDT INFO shinyevents 85743fad-3b4a-44c3-be8e-af42686b1a3f example readme "
+#> [2] "2019-09-02 16:19:51 CDT INFO shinyevents 85743fad-3b4a-44c3-be8e-af42686b1a3f start_app  "    
+#> [3] "2019-09-02 16:19:51 CDT INFO shinyevents 85743fad-3b4a-44c3-be8e-af42686b1a3f slider 3 "      
+#> [4] "2019-09-02 16:19:51 CDT INFO shinyevents 85743fad-3b4a-44c3-be8e-af42686b1a3f stop_app  "
 ```
 
 ## In a Shiny app
@@ -175,7 +177,7 @@ tracking. Two of these are:
 tracker$app
 #> [1] "shinyevents"
 tracker$guid
-#> [1] "66334595-0a8a-480b-82fd-e07e3db65515"
+#> [1] "85743fad-3b4a-44c3-be8e-af42686b1a3f"
 ```
 
 The `entry()` function returns a `list` object. The list contains the
@@ -186,13 +188,13 @@ function that the `shiny_events_to_log()`, `shiny_events_to_csv()` and
 ``` r
 tracker$entry()
 #> $guid
-#> [1] "66334595-0a8a-480b-82fd-e07e3db65515"
+#> [1] "85743fad-3b4a-44c3-be8e-af42686b1a3f"
 #> 
 #> $app
 #> [1] "shinyevents"
 #> 
 #> $datetime
-#> [1] "2019-09-02 16:15:53 CDT"
+#> [1] "2019-09-02 16:19:51 CDT"
 #> 
 #> $activity
 #> [1] ""
@@ -220,7 +222,7 @@ tracker$event <- function(activity = "", value = "") {
 }
 tracker$event("example", "readme")
 readLines("shinyevents-pipe.txt")
-#> [1] "69f05952-7d28-4122-b81e-5c9da6c80fd7|2019-09-02 16:15:53 CDT|shinyevents|example|readme|"
+#> [1] "a94557cd-6762-4545-9dc9-ed2a7d4541ae|2019-09-02 16:19:51 CDT|shinyevents|example|readme|"
 ```
 
 ## CSV example
@@ -246,13 +248,13 @@ read.csv(
   col.names = c("guid", "app", "activity", "value", "datetime")
 )
 #>                                   guid         app  activity value
-#> 1 1afb9b61-de7d-4b36-ae56-5f71e8d80f68 shinyevents start_app    NA
-#> 2 1afb9b61-de7d-4b36-ae56-5f71e8d80f68 shinyevents    slider     3
-#> 3 1afb9b61-de7d-4b36-ae56-5f71e8d80f68 shinyevents  stop_app    NA
+#> 1 5217d0af-e29d-4ecc-8920-4c5858fdaf33 shinyevents start_app    NA
+#> 2 5217d0af-e29d-4ecc-8920-4c5858fdaf33 shinyevents    slider     3
+#> 3 5217d0af-e29d-4ecc-8920-4c5858fdaf33 shinyevents  stop_app    NA
 #>                  datetime
-#> 1 2019-09-02 16:15:53 CDT
-#> 2 2019-09-02 16:15:53 CDT
-#> 3 2019-09-02 16:15:53 CDT
+#> 1 2019-09-02 16:19:51 CDT
+#> 2 2019-09-02 16:19:51 CDT
+#> 3 2019-09-02 16:19:51 CDT
 ```
 
 ## Database example
@@ -287,9 +289,9 @@ tracker$event("stop_app")
 ``` r
 dbGetQuery(con, "SELECT * FROM shinyevents")
 #>                                   guid         app                datetime
-#> 1 a97fa0f2-8514-4b3a-8fce-ce386385a004 shinyevents 2019-09-02 16:15:54 CDT
-#> 2 a97fa0f2-8514-4b3a-8fce-ce386385a004 shinyevents 2019-09-02 16:15:54 CDT
-#> 3 a97fa0f2-8514-4b3a-8fce-ce386385a004 shinyevents 2019-09-02 16:15:54 CDT
+#> 1 217fcd67-dd9e-4d0f-aa4e-75bfa866b136 shinyevents 2019-09-02 16:19:52 CDT
+#> 2 217fcd67-dd9e-4d0f-aa4e-75bfa866b136 shinyevents 2019-09-02 16:19:52 CDT
+#> 3 217fcd67-dd9e-4d0f-aa4e-75bfa866b136 shinyevents 2019-09-02 16:19:52 CDT
 #>    activity value
 #> 1 start_app      
 #> 2    slider     3
