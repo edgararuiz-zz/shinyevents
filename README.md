@@ -68,7 +68,7 @@ can be accessed in one of many ways. In this case we’ll just use
 
 ``` r
 readLines("shiny-events.log")
-#> [1] "2019-09-02 13:44:09 CDT INFO shinyevents 9aac6fbb-ca93-45d6-af7b-c110172dfde3 example readme "
+#> [1] "2019-09-02 14:29:37 CDT INFO shinyevents d6fd3a63-2047-4453-bfad-1718e2c07c6f example readme "
 ```
 
 A Globally Unique Identifier, or GUID, is created by
@@ -84,10 +84,10 @@ tracker$event("stop_app")
 
 ``` r
 readLines("shiny-events.log")
-#> [1] "2019-09-02 13:44:09 CDT INFO shinyevents 9aac6fbb-ca93-45d6-af7b-c110172dfde3 example readme "
-#> [2] "2019-09-02 13:44:09 CDT INFO shinyevents 9aac6fbb-ca93-45d6-af7b-c110172dfde3 start_app  "    
-#> [3] "2019-09-02 13:44:09 CDT INFO shinyevents 9aac6fbb-ca93-45d6-af7b-c110172dfde3 slider 3 "      
-#> [4] "2019-09-02 13:44:09 CDT INFO shinyevents 9aac6fbb-ca93-45d6-af7b-c110172dfde3 stop_app  "
+#> [1] "2019-09-02 14:29:37 CDT INFO shinyevents d6fd3a63-2047-4453-bfad-1718e2c07c6f example readme "
+#> [2] "2019-09-02 14:29:37 CDT INFO shinyevents d6fd3a63-2047-4453-bfad-1718e2c07c6f start_app  "    
+#> [3] "2019-09-02 14:29:37 CDT INFO shinyevents d6fd3a63-2047-4453-bfad-1718e2c07c6f slider 3 "      
+#> [4] "2019-09-02 14:29:37 CDT INFO shinyevents d6fd3a63-2047-4453-bfad-1718e2c07c6f stop_app  "
 ```
 
 ## In a Shiny app
@@ -172,7 +172,7 @@ tracking. Two of these are:
 tracker$app
 #> [1] "shinyevents"
 tracker$guid
-#> [1] "9aac6fbb-ca93-45d6-af7b-c110172dfde3"
+#> [1] "d6fd3a63-2047-4453-bfad-1718e2c07c6f"
 ```
 
 The `entry()` function returns a `list` object. The list contains the
@@ -183,13 +183,13 @@ function that the `shiny_events_to_log()`, `shiny_events_to_csv()` and
 ``` r
 tracker$entry()
 #> $guid
-#> [1] "9aac6fbb-ca93-45d6-af7b-c110172dfde3"
+#> [1] "d6fd3a63-2047-4453-bfad-1718e2c07c6f"
 #> 
 #> $app
 #> [1] "shinyevents"
 #> 
 #> $datetime
-#> [1] "2019-09-02 13:44:09 CDT"
+#> [1] "2019-09-02 14:29:37 CDT"
 #> 
 #> $activity
 #> [1] ""
@@ -215,12 +215,18 @@ tracker$event("example", "readme")
 
 ## CSV example
 
+Initialize a new CSV log with `shiny_events_to_csv()`.
+
 ``` r
 tracker <- shiny_events_to_csv()
 tracker$event("start_app")
 tracker$event("slider", "3")
 tracker$event("stop_app")
 ```
+
+To avoid file locks, `shiny_events_to_csv()` uses the `cat()` function
+inside its code. It also means that the table will not have headers, so
+they have to be defined at read time:
 
 ``` r
 read.csv(
@@ -229,16 +235,29 @@ read.csv(
   col.names = c("guid", "app", "activity", "value", "datetime")
 )
 #>                                   guid         app  activity value
-#> 1 1df735e6-f86e-48c9-a87a-a114d628a301 shinyevents start_app    NA
-#> 2 1df735e6-f86e-48c9-a87a-a114d628a301 shinyevents    slider     3
-#> 3 1df735e6-f86e-48c9-a87a-a114d628a301 shinyevents  stop_app    NA
+#> 1 225c7240-92c4-4cbc-bf4b-abdb7695621b shinyevents start_app    NA
+#> 2 225c7240-92c4-4cbc-bf4b-abdb7695621b shinyevents    slider     3
+#> 3 225c7240-92c4-4cbc-bf4b-abdb7695621b shinyevents  stop_app    NA
 #>                  datetime
-#> 1 2019-09-02 13:44:09 CDT
-#> 2 2019-09-02 13:44:09 CDT
-#> 3 2019-09-02 13:44:09 CDT
+#> 1 2019-09-02 14:29:37 CDT
+#> 2 2019-09-02 14:29:37 CDT
+#> 3 2019-09-02 14:29:37 CDT
 ```
 
 ## Database example
+
+`shiny_events_to_dbi` uses the `DBI` package to record events. Here are
+a few highlights of how it works:
+
+  - Uses the `dbWriteTable()` function, this allows it to work on most
+    databases `DBI` is able to interact with
+  - The `append = TRUE` argument is used. This allows the table to be
+    created if it doesn’t exists yet, and only to add new records to the
+    table, instead of overriding its content.
+  - It creates, or expects, a table with the following names: `guid`,
+    `app`, `datetime`, `activity`, `value`.
+
+<!-- end list -->
 
 ``` r
 library(DBI)
@@ -257,9 +276,9 @@ tracker$event("stop_app")
 ``` r
 dbGetQuery(con, "SELECT * FROM shinyevents")
 #>                                   guid         app                datetime
-#> 1 f4d6cf13-e9dd-4361-a488-5786b60daa25 shinyevents 2019-09-02 13:44:10 CDT
-#> 2 f4d6cf13-e9dd-4361-a488-5786b60daa25 shinyevents 2019-09-02 13:44:10 CDT
-#> 3 f4d6cf13-e9dd-4361-a488-5786b60daa25 shinyevents 2019-09-02 13:44:10 CDT
+#> 1 9a6466a1-a3c3-4e27-b70e-d3c93d11e481 shinyevents 2019-09-02 14:29:38 CDT
+#> 2 9a6466a1-a3c3-4e27-b70e-d3c93d11e481 shinyevents 2019-09-02 14:29:38 CDT
+#> 3 9a6466a1-a3c3-4e27-b70e-d3c93d11e481 shinyevents 2019-09-02 14:29:39 CDT
 #>    activity value
 #> 1 start_app      
 #> 2    slider     3

@@ -183,12 +183,16 @@ tracker$event("slider", "3")
 tracker$event("stop_app")
 ```
 
+Initialize a new CSV log with `shiny_events_to_csv()`.  
+
 ```{r, eval = FALSE}
 tracker <- shiny_events_to_csv()
 tracker$event("start_app")
 tracker$event("slider", "3")
 tracker$event("stop_app")
 ```
+
+To avoid file locks, `shiny_events_to_csv()` uses the `cat()` function inside its code.  It also means that the table will not have headers, so they have to be defined at read time:
 
 ```{r}
 read.csv(
@@ -199,6 +203,13 @@ read.csv(
 ```
 
 ## Database example
+
+`shiny_events_to_dbi` uses the `DBI` package to record events.  Here are a few highlights of how it works:
+
+- Uses the `dbWriteTable()` function, this allows it to work on most databases `DBI` is able to interact with
+- The `append = TRUE` argument is used.  This allows the table to be created if it doesn't exists yet, and only to add new records to the table, instead of overriding its content.
+- It creates, or expects, a table with the following names: `guid`, `app`, `datetime`, `activity`, `value`.
+
 
 ```{r}
 library(DBI)
