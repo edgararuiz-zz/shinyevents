@@ -27,7 +27,7 @@ shiny_events_to_csv <- function(app = basename(getwd()), filename = "shiny-event
     entry <- se$entry(activity = activity, value = value)
     event_to_csv(
       sessionid = entry$guid,
-      app =entry$app,
+      app = entry$app,
       activity = entry$activity,
       value = entry$value,
       time = entry$datetime,
@@ -37,13 +37,13 @@ shiny_events_to_csv <- function(app = basename(getwd()), filename = "shiny-event
   se
 }
 
-event_to_csv <- function(sessionid, app, activity, 
-                         value, time, filename){
+event_to_csv <- function(sessionid, app, activity,
+                         value, time, filename) {
   cat(
     paste0(
       sessionid, ",", app, ",", activity, ",",
       value, ",", time, "\n"
-    ), 
+    ),
     file = filename,
     append = TRUE
   )
@@ -57,7 +57,7 @@ shiny_events_to_log <- function(app = basename(getwd()), filename = "shiny-event
     entry <- se$entry(activity = activity, value = value)
     event_to_log(
       sessionid = entry$guid,
-      app =entry$app,
+      app = entry$app,
       activity = entry$activity,
       value = entry$value,
       time = entry$datetime,
@@ -68,13 +68,13 @@ shiny_events_to_log <- function(app = basename(getwd()), filename = "shiny-event
   se
 }
 
-event_to_log <- function(sessionid, app, activity, 
-                         value, time, type, filename){
+event_to_log <- function(sessionid, app, activity,
+                         value, time, type, filename) {
   cat(
     paste0(
-      time, " ", type, " ", app, " ", sessionid, " ", 
+      time, " ", type, " ", app, " ", sessionid, " ",
       activity, " ", value, " ", "\n"
-    ), 
+    ),
     file = filename,
     append = TRUE
   )
@@ -95,11 +95,11 @@ shiny_events_to_dbi <- function(app = basename(getwd()), table = "shinyevents", 
   se
 }
 
-event_to_dbi <- function(connection, table, entry){
+event_to_dbi <- function(connection, table, entry) {
   DBI::dbWriteTable(
     conn = connection,
-    name = table, 
+    name = table,
     value = as.data.frame(entry, stringsAsFactors = FALSE),
     append = TRUE
-  )  
+  )
 }
