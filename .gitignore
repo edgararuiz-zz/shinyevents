@@ -27,3 +27,4 @@ rsconnect/
 shiny-events.csv
 shiny-events.log
 example.db
+shinyevents-pipe.txt

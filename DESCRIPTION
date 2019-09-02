@@ -1,17 +1,19 @@
 Package: shinyevents
-Title: What the Package Does (One Line, Title Case)
+Title: Log Shiny app events
 Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: What license it uses
+Authors@R:
+    person("Edgar", "Ruiz", email = "edgar@rstudio.com", role = c("aut", "cre"))
+Description:provides a flexible and easy to use framework to record activity occurring withing a 
+    Shiny app. The logged information can be accumulated and later be used to help improve 
+    the app's performance and user's experience.
+License: GPL-3 + file LICENSE
+URL: https://github.com/edgararuiz/shinyevents
+Bugs: https://github.com/edgararuiz/shinyevents/issues
 Encoding: UTF-8
 LazyData: true
 Imports:
   rlang,
   uuid
+Suggests:
+  DBI
 RoxygenNote: 6.1.1

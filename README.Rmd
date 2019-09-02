@@ -14,6 +14,7 @@ knitr::opts_chunk$set(
 if(file.exists("shiny-events.csv")) unlink("shiny-events.csv")
 if(file.exists("shiny-events.log")) unlink("shiny-events.log")
 if(file.exists("example.db")) unlink("example.db")
+if(file.exists("shinyevents-pipe.txt")) unlink("shinyevents-pipe.txt")
 ```
 
 # shinyevents
@@ -31,7 +32,7 @@ if(file.exists("example.db")) unlink("example.db")
 -   [Database example](#database-example)
 -   [Sample apps](#sample-apps)
 
-The goal of `shinyevents` is to provide an easy way to log Shiny app events.  The logged information can be accumulated and later be used to help improve the app's performance and user's experience.
+`shinyevents` provides a flexible and easy to use framework to record activity occurring withing a Shiny app. The logged information can be accumulated and later be used to help improve the app's performance and user's experience.
 
 
 ## Installation
@@ -162,30 +163,27 @@ tracker$entry()
 
 ### Custom event
 
-It is possible to customize the output or add a new target file (beyond CSV, log or Database).  To do that, override the `event()` function after assigning it to a variable.  For example:
+It is possible to customize the output or add a new target file (beyond CSV, log or Database).  To do that, override the `event()` function after assigning it to a variable.  For example, if a pipe delimited file is required for tracking the Shiny events, we could use the following:
 
-```{r, eval= FALSE}
+```{r}
 tracker <- shiny_events()
 tracker$event <- function(activity = "", value = "") { 
-  entry <- se$entry(activity = activity, value = value)
-  "[Your code's event recording. Uses data from `entry`]"
+  entry <- tracker$entry(activity = activity, value = value)
+  cat(
+    paste(entry$guid, entry$datetime, entry$app, entry$activity, entry$value, "\n", sep = "|"),
+    file = "shinyevents-pipe.txt",
+    append = TRUE
+  )
 }
 tracker$event("example", "readme")
+readLines("shinyevents-pipe.txt")
 ```
 
 ## CSV example
 
-```{r, echo = FALSE}
-tracker <- shiny_events_to_csv()
-tracker$event("")
-tracker$event("start_app")
-tracker$event("slider", "3")
-tracker$event("stop_app")
-```
-
 Initialize a new CSV log with `shiny_events_to_csv()`.  
 
-```{r, eval = FALSE}
+```{r}
 tracker <- shiny_events_to_csv()
 tracker$event("start_app")
 tracker$event("slider", "3")
@@ -198,6 +196,7 @@ To avoid file locks, `shiny_events_to_csv()` uses the `cat()` function inside it
 read.csv(
   "shiny-events.csv",
   stringsAsFactors = FALSE,
+  header = FALSE,
   col.names = c("guid", "app", "activity", "value", "datetime")
 )
 ```

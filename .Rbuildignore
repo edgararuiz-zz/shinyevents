@@ -1,3 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
+example.db
+shiny-events.csv
+shiny-events.log
+shinyevents-pipe.txt
