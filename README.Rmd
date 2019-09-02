@@ -11,6 +11,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+if(file.exists("shiny-events.csv")) unlink("shiny-events.csv")
 ```
 # shinyevents
 
@@ -43,6 +44,37 @@ tracker$app
 tracker$guid
 ```
 
+```{r}
+tracker$entry()
+```
+
+```{r, include = FALSE}
+tracker$event("example", "readme")
+```
+
+
+```{r}
+tracker$event("example", "readme")
+```
+
+```{r}
+read_events <- function()  {
+  read.csv(
+  "shiny-events.csv",
+  stringsAsFactors = FALSE,
+  col.names = c("guid", "app", "activity", "value", "datetime")
+  )
+}
+read_events()
+```
+
+```{r}
+tracker$event("start_app")
+tracker$event("slider", "3")
+tracker$event("stop_app")
+
+read_events()
+```
 
 ## Example
 
