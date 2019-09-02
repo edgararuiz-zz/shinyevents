@@ -12,7 +12,8 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
   - [Installation](#installation)
   - [Usage](#usage)
   - [In a Shiny app](#in-a-shiny-app)
-  - [More info](#more-info)
+  - [More info](#further-info)
+      - [Custom event](#custom-event)
   - [CSV example](#csv-example)
   - [Database example](#database-example)
   - [Sample apps](#sample-apps)
@@ -67,8 +68,13 @@ can be accessed in one of many ways. In this case we’ll just use
 
 ``` r
 readLines("shiny-events.log")
-#> [1] "2019-09-02 10:14:20 CDT INFO shinyevents b07e1e93-9674-4de0-9b20-39141427d19c example readme "
+#> [1] "2019-09-02 13:44:09 CDT INFO shinyevents 9aac6fbb-ca93-45d6-af7b-c110172dfde3 example readme "
 ```
+
+A Globally Unique Identifier, or GUID, is created by
+`shiny_events_to_log()`. Every event entry for that session will contain
+the same GUID. This allows us to know what activity was part of which
+app’s user session.
 
 ``` r
 tracker$event("start_app")
@@ -78,13 +84,25 @@ tracker$event("stop_app")
 
 ``` r
 readLines("shiny-events.log")
-#> [1] "2019-09-02 10:14:20 CDT INFO shinyevents b07e1e93-9674-4de0-9b20-39141427d19c example readme "
-#> [2] "2019-09-02 10:14:20 CDT INFO shinyevents b07e1e93-9674-4de0-9b20-39141427d19c start_app  "    
-#> [3] "2019-09-02 10:14:20 CDT INFO shinyevents b07e1e93-9674-4de0-9b20-39141427d19c slider 3 "      
-#> [4] "2019-09-02 10:14:20 CDT INFO shinyevents b07e1e93-9674-4de0-9b20-39141427d19c stop_app  "
+#> [1] "2019-09-02 13:44:09 CDT INFO shinyevents 9aac6fbb-ca93-45d6-af7b-c110172dfde3 example readme "
+#> [2] "2019-09-02 13:44:09 CDT INFO shinyevents 9aac6fbb-ca93-45d6-af7b-c110172dfde3 start_app  "    
+#> [3] "2019-09-02 13:44:09 CDT INFO shinyevents 9aac6fbb-ca93-45d6-af7b-c110172dfde3 slider 3 "      
+#> [4] "2019-09-02 13:44:09 CDT INFO shinyevents 9aac6fbb-ca93-45d6-af7b-c110172dfde3 stop_app  "
 ```
 
 ## In a Shiny app
+
+Here is the code for a sample app that tracks several different events:
+
+  - App’s session begins
+  - Slider is changed, and its current value
+  - Beginning of the plot’s output processing
+  - Completion of the plot’s output processing
+  - App’s session closes
+
+Feel free to copy and run this code in your R session. There are several
+comments inside the code to further clarify the purpose of the tracking
+related activity.
 
 ``` r
 library(shiny)
@@ -96,14 +114,14 @@ ui <- fluidPage(
         mainPanel(plotOutput("distPlot"))
     ))
 server <- function(input, output, session) {
-    tracker <- shiny_events_to_log() # <- Initialize to log
+    tracker <- shiny_events_to_log() # <- Initializes as log file
     tracker$event("app_initiated") # <- Tracks start of app session
     observeEvent( # <- Track input using shiny::observeEvent()
       input$bins, 
       tracker$event("bin_slider", input$bins), # <- Pass the input's value to the event
-      ignoreInit = TRUE) # <- Use ignoreInit to avoid logging the input's initial value
+      ignoreInit = TRUE) # <- ignoreInit avoids logging the input's initial value
     session$onSessionEnded( # <- Track when the app closes using session$onSessionEnded
-      function() tracker$event("close_app")) # <- Combine with a simple tracker entry
+      function() tracker$event("close_app")) # <- Combine with a simple event entry
     output$distPlot <- renderPlot({
         tracker$event("plot_started", input$bins) # <- Tracks code start
         x    <- faithful[, 2]
@@ -114,6 +132,12 @@ server <- function(input, output, session) {
 }
 shinyApp(ui, server)
 ```
+
+After playing a bit with the slider, the app can be closed. This
+activity was recorded in a new file, called `shiny-events.log`. If you
+tried the app code above, use the `readLines()` code below to see the
+resulting
+entries.
 
 ``` r
 readLines("shiny-events.log")
@@ -132,31 +156,61 @@ readLines("shiny-events.log")
 [10] "2019-09-02 10:11:08 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f close_app  "   
 ```
 
-## More info
+## Further info
+
+Some additional information is exposed by the variable assigned to the
+Shiny event function. These are made available to allow developers to
+use them in other functions, or to create a custom target for the event
+tracking. Two of these are:
+
+  - The app’s name
+  - The session’s GUID
+
+<!-- end list -->
 
 ``` r
 tracker$app
 #> [1] "shinyevents"
 tracker$guid
-#> [1] "b07e1e93-9674-4de0-9b20-39141427d19c"
+#> [1] "9aac6fbb-ca93-45d6-af7b-c110172dfde3"
 ```
+
+The `entry()` function returns a `list` object. The list contains the
+session information, and the date/time of the entry. This is the base
+function that the `shiny_events_to_log()`, `shiny_events_to_csv()` and
+`shiny_events_to_dbi()` use.
 
 ``` r
 tracker$entry()
 #> $guid
-#> [1] "b07e1e93-9674-4de0-9b20-39141427d19c"
+#> [1] "9aac6fbb-ca93-45d6-af7b-c110172dfde3"
 #> 
 #> $app
 #> [1] "shinyevents"
 #> 
 #> $datetime
-#> [1] "2019-09-02 10:14:20 CDT"
+#> [1] "2019-09-02 13:44:09 CDT"
 #> 
 #> $activity
 #> [1] ""
 #> 
 #> $value
 #> [1] ""
+```
+
+### Custom event
+
+It is possible to customize the output or add a new target file (beyond
+CSV, log or Database). To do that, override the `event()` function after
+assigning it to a variable. For example:
+
+``` r
+tracker <- shiny_events()
+tracker$event <- function(activity = "", value = "") { 
+  entry <- se$entry(activity = activity, value = value)
+  "[Your code's event recording. Uses data from `entry`]"
+}
+tracker$event("example", "readme")
 ```
 
 ## CSV example
@@ -175,13 +229,13 @@ read.csv(
   col.names = c("guid", "app", "activity", "value", "datetime")
 )
 #>                                   guid         app  activity value
-#> 1 57848098-78a7-45e5-ac62-2307ee71789d shinyevents start_app    NA
-#> 2 57848098-78a7-45e5-ac62-2307ee71789d shinyevents    slider     3
-#> 3 57848098-78a7-45e5-ac62-2307ee71789d shinyevents  stop_app    NA
+#> 1 1df735e6-f86e-48c9-a87a-a114d628a301 shinyevents start_app    NA
+#> 2 1df735e6-f86e-48c9-a87a-a114d628a301 shinyevents    slider     3
+#> 3 1df735e6-f86e-48c9-a87a-a114d628a301 shinyevents  stop_app    NA
 #>                  datetime
-#> 1 2019-09-02 10:14:20 CDT
-#> 2 2019-09-02 10:14:20 CDT
-#> 3 2019-09-02 10:14:20 CDT
+#> 1 2019-09-02 13:44:09 CDT
+#> 2 2019-09-02 13:44:09 CDT
+#> 3 2019-09-02 13:44:09 CDT
 ```
 
 ## Database example
@@ -203,9 +257,9 @@ tracker$event("stop_app")
 ``` r
 dbGetQuery(con, "SELECT * FROM shinyevents")
 #>                                   guid         app                datetime
-#> 1 6a412c89-e292-4da1-9205-836888b35a5b shinyevents 2019-09-02 10:14:21 CDT
-#> 2 6a412c89-e292-4da1-9205-836888b35a5b shinyevents 2019-09-02 10:14:21 CDT
-#> 3 6a412c89-e292-4da1-9205-836888b35a5b shinyevents 2019-09-02 10:14:21 CDT
+#> 1 f4d6cf13-e9dd-4361-a488-5786b60daa25 shinyevents 2019-09-02 13:44:10 CDT
+#> 2 f4d6cf13-e9dd-4361-a488-5786b60daa25 shinyevents 2019-09-02 13:44:10 CDT
+#> 3 f4d6cf13-e9dd-4361-a488-5786b60daa25 shinyevents 2019-09-02 13:44:10 CDT
 #>    activity value
 #> 1 start_app      
 #> 2    slider     3
