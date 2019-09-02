@@ -12,31 +12,38 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 if(file.exists("shiny-events.csv")) unlink("shiny-events.csv")
+if(file.exists("shiny-events.log")) unlink("shiny-events.log")
+if(file.exists("example.db")) unlink("example.db")
 ```
+
 # shinyevents
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
-The goal of `shinyevents` is to provide an easy way to log events ocurring within a Shiny app.  The logged events can later be analyzed to help determine things such possible improvement oportunities for an app, as well how end-users actually interact with the app itself.
+-   [Installation](#installation)
+-   [Event tracking](#event-tracking)
+    -   [CSV example](#csv-example)
+    -   [Database example](#database-example)
+-   [Sample apps](#sample-apps)
+
+The goal of `shinyevents` is to provide an easy way to log events occurring within a Shiny app.  The logged events can later be analyzed to help determine things such possible improvement opportunities for an app, as well how end-users actually interact with the app itself.
 
 ## Installation
 
-The development version pf `shinyevents` is available on [GitHub](https://github.com/):
+The development version of `shinyevents` is available on [GitHub](https://github.com/):
 
 ``` r
 # install.packages("remotes")
 remotes::install_github("edgararuiz/shinyevents")
 ```
-
-
-This is a basic example which shows you how to solve a common problem:
+## Event tracking
 
 ```{r example}
 library(shinyevents)
 
-tracker <- shiny_events_to_csv()
+tracker <- shiny_events_to_log()
 ```
 
 ```{r}
@@ -48,35 +55,85 @@ tracker$guid
 tracker$entry()
 ```
 
-```{r, include = FALSE}
-tracker$event("example", "readme")
-```
-
-
 ```{r}
 tracker$event("example", "readme")
 ```
 
 ```{r}
-read_events <- function()  {
-  read.csv(
-  "shiny-events.csv",
-  stringsAsFactors = FALSE,
-  col.names = c("guid", "app", "activity", "value", "datetime")
-  )
-}
-read_events()
+readLines("shiny-events.log")
 ```
 
 ```{r}
 tracker$event("start_app")
 tracker$event("slider", "3")
 tracker$event("stop_app")
-
-read_events()
 ```
 
-## Example
+
+```{r}
+readLines("shiny-events.log")
+```
+
+## CSV example
+
+```{r, echo = FALSE}
+tracker <- shiny_events_to_csv()
+tracker$event("")
+tracker$event("start_app")
+tracker$event("slider", "3")
+tracker$event("stop_app")
+```
+
+```{r, eval = FALSE}
+tracker <- shiny_events_to_csv()
+tracker$event("start_app")
+tracker$event("slider", "3")
+tracker$event("stop_app")
+```
+
+```{r}
+read.csv(
+  "shiny-events.csv",
+  stringsAsFactors = FALSE,
+  col.names = c("guid", "app", "activity", "value", "datetime")
+)
+```
+
+## Database example
+
+```{r}
+library(DBI)
+library(RSQLite)
+
+con <- dbConnect(SQLite(), "example.db")
+```
+
+
+```{r}
+tracker <- shiny_events_to_dbi(table = "shinyevents", connection = con)
+tracker$event("start_app")
+tracker$event("slider", "3")
+tracker$event("stop_app")
+```
+
+```{r}
+dbGetQuery(con, "SELECT * FROM shinyevents")
+```
+
+```{r}
+dbDisconnect(con)
+```
+
+
+## Sample apps
+
+The package includes several app examples.  The example pictured below, uses `shiny_events_to_dbi()` to record the events in a database, in this case SQLite.  It records when there are changes in each of the inputs, as well as when the plot;s code starts and ends. There are entries for when the app starts and is closed.
+
+<img src="man/figures/example-app.png" align="center" width="600" />
+
+<br/>
+
+Run the following code in your R session to access the app:
 
 ```{r, eval = FALSE}
 shiny::runApp(
@@ -87,6 +144,31 @@ shiny::runApp(
   display.mode = "normal"
   )
 ```
+
+### Additional samples
+
+- *Simple example* - An example using the "Old Faithful Geyser" app, shows the easiest way to include `shinyevents` in an app.
+    ```{r, eval = FALSE}
+    shiny::runApp(
+      system.file(
+        "samples", "simple", 
+        package = "shinyevents"
+        ), 
+      display.mode = "normal"
+      )
+    ```
+
+- *shinydashboard* - An example that looks the same as the `shinydashboard` example above, but it uses a CSV file to record the events instead of a database.
+    ```{r, eval = FALSE}
+    shiny::runApp(
+      system.file(
+        "samples", "shinydashboard", 
+        package = "shinyevents"
+        ), 
+      display.mode = "normal"
+      )
+    ```
+
 
 
 
