@@ -23,12 +23,15 @@ if(file.exists("example.db")) unlink("example.db")
 <!-- badges: end -->
 
 -   [Installation](#installation)
--   [Event tracking](#event-tracking)
-    -   [CSV example](#csv-example)
-    -   [Database example](#database-example)
+-   [Usage](#usage)
+-   [In a Shiny app](#in-a-shiny-app)
+-   [More info](#more-info)
+-   [CSV example](#csv-example)
+-   [Database example](#database-example)
 -   [Sample apps](#sample-apps)
 
-The goal of `shinyevents` is to provide an easy way to log events occurring within a Shiny app.  The logged events can later be analyzed to help determine things such possible improvement opportunities for an app, as well how end-users actually interact with the app itself.
+The goal of `shinyevents` is to provide an easy way to log Shiny app events.  The logged information can be accumulated and later be used to help improve the app's performance and user's experience.
+
 
 ## Installation
 
@@ -38,26 +41,30 @@ The development version of `shinyevents` is available on [GitHub](https://github
 # install.packages("remotes")
 remotes::install_github("edgararuiz/shinyevents")
 ```
-## Event tracking
 
-```{r example}
+## Usage
+
+`shinyevents` attempts to provide a simple way to track different Shiny events by using two functions.  The first function is one of three which initialize the tracking:
+
+- `shiny_events_to_log()` - Saves the event data into a `.log` file
+- `shiny_events_to_csv()` - Saves the event data into a `.csv` file
+- `shiny_events_to_dbi()` - Saves the event data into a database, via the `DBI` package
+
+Once the target for the event tracking is chosen, `shinyevents` is initialized by assigning the function's result to a variable:
+
+```{r}
 library(shinyevents)
 
 tracker <- shiny_events_to_log()
 ```
 
-```{r}
-tracker$app
-tracker$guid
-```
-
-```{r}
-tracker$entry()
-```
+Once initialized, the second function to use, is one created inside the assigned variable.  The function is called: `event()`.  Since selected variable's name was `tracker`, to access it we use `tracker$event()`.  To it we can pass two values, as arguments, those values are free-form text, so the developer of the app can decide what to record:
 
 ```{r}
 tracker$event("example", "readme")
 ```
+
+By default, the log file name is `shiny-events.log`. At this point, it can be accessed in one of many ways. In this case we'll just use `readLines()`. 
 
 ```{r}
 readLines("shiny-events.log")
@@ -69,10 +76,69 @@ tracker$event("slider", "3")
 tracker$event("stop_app")
 ```
 
-
 ```{r}
 readLines("shiny-events.log")
 ```
+
+## In a Shiny app
+
+```{r, eval = FALSE}
+library(shiny)
+library(shinyevents)
+ui <- fluidPage(
+    titlePanel("Old Faithful Geyser Data"),
+    sidebarLayout(
+        sidebarPanel(sliderInput("bins", "Bins:", 1, 50, 30)),
+        mainPanel(plotOutput("distPlot"))
+    ))
+server <- function(input, output, session) {
+    tracker <- shiny_events_to_log() # <- Initialize to log
+    tracker$event("app_initiated") # <- Tracks start of app session
+    observeEvent( # <- Track input using shiny::observeEvent()
+      input$bins, 
+      tracker$event("bin_slider", input$bins), # <- Pass the input's value to the event
+      ignoreInit = TRUE) # <- Use ignoreInit to avoid logging the input's initial value
+    session$onSessionEnded( # <- Track when the app closes using session$onSessionEnded
+      function() tracker$event("close_app")) # <- Combine with a simple tracker entry
+    output$distPlot <- renderPlot({
+        tracker$event("plot_started", input$bins) # <- Tracks code start
+        x    <- faithful[, 2]
+        bins <- seq(min(x), max(x), length.out = input$bins + 1)
+        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+        tracker$event("plot_rendered", input$bins) # <- Tracks code completion
+    })
+}
+shinyApp(ui, server)
+```
+
+```{r, eval = FALSE}
+readLines("shiny-events.log")
+```
+
+```
+ [1] "2019-09-02 10:11:03 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f app_initiated  "  
+ [2] "2019-09-02 10:11:03 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_started 30 " 
+ [3] "2019-09-02 10:11:03 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_rendered 30 "
+ [4] "2019-09-02 10:11:04 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f bin_slider 44 "   
+ [5] "2019-09-02 10:11:05 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_started 44 " 
+ [6] "2019-09-02 10:11:05 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_rendered 44 "
+ [7] "2019-09-02 10:11:07 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_started 4 "  
+ [8] "2019-09-02 10:11:07 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_rendered 4 " 
+ [9] "2019-09-02 10:11:07 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f bin_slider 4 "    
+[10] "2019-09-02 10:11:08 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f close_app  "   
+```
+
+## More info
+
+```{r}
+tracker$app
+tracker$guid
+```
+
+```{r}
+tracker$entry()
+```
+
 
 ## CSV example
 
