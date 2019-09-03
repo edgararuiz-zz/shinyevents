@@ -21,7 +21,7 @@ if(file.exists("shinyevents-pipe.txt")) unlink("shinyevents-pipe.txt")
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![Travis build status](https://travis-ci.org/edgararuiz/shinyevents.svg?branch=master)](https://travis-ci.org/edgararuiz/shinyevents)
+[![Travis build status](https://travis-ci.com/edgararuiz/shinyevents.svg?branch=master)](https://travis-ci.org/edgararuiz/shinyevents)
 [![Codecov test coverage](https://codecov.io/gh/edgararuiz/shinyevents/branch/master/graph/badge.svg)](https://codecov.io/gh/edgararuiz/shinyevents?branch=master)
 <!-- badges: end -->
 
@@ -36,7 +36,6 @@ if(file.exists("shinyevents-pipe.txt")) unlink("shinyevents-pipe.txt")
 -   [Sample apps](#sample-apps)
 
 `shinyevents` provides a flexible and easy to use framework to record activity occurring withing a Shiny app. The logged information can be accumulated and later be used to help improve the app's performance and user's experience.
-
 
 ## Installation
 
@@ -134,17 +133,17 @@ After playing a bit with the slider, the app can be closed.  This activity was r
 ```{r, eval = FALSE}
 readLines("shiny-events.log")
 ```
-```
- [1] "2019-09-02 10:11:03 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f app_initiated  "  
- [2] "2019-09-02 10:11:03 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_started 30 " 
- [3] "2019-09-02 10:11:03 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_rendered 30 "
- [4] "2019-09-02 10:11:04 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f bin_slider 44 "   
- [5] "2019-09-02 10:11:05 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_started 44 " 
- [6] "2019-09-02 10:11:05 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_rendered 44 "
- [7] "2019-09-02 10:11:07 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_started 4 "  
- [8] "2019-09-02 10:11:07 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_rendered 4 " 
- [9] "2019-09-02 10:11:07 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f bin_slider 4 "    
-[10] "2019-09-02 10:11:08 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f close_app  "   
+```r
+##  [1] "2019-09-03 16:22:17 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 app_initiated "  
+##  [2] "2019-09-03 16:22:17 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 plot_started 30" 
+##  [3] "2019-09-03 16:22:17 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 plot_rendered 30"
+##  [4] "2019-09-03 16:22:20 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 bin_slider 19"   
+##  [5] "2019-09-03 16:22:20 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 plot_started 19" 
+##  [6] "2019-09-03 16:22:20 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 plot_rendered 19"
+##  [7] "2019-09-03 16:22:22 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 plot_started 41" 
+##  [8] "2019-09-03 16:22:22 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 plot_rendered 41"
+##  [9] "2019-09-03 16:22:22 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 bin_slider 41"   
+## [10] "2019-09-03 16:22:24 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 close_app "      
 ```
 
 ## Further info

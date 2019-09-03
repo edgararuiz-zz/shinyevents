@@ -104,7 +104,7 @@ shiny_events_to_log <- function(app = basename(getwd()), filename = "shiny-event
   se$event <- function(activity = "", value = "", type = "INFO") {
     entry <- se$entry(activity = activity, value = value)
     event_to_file(
-      entry$guid, entry$app, entry$activity, entry$value, entry$datetime, type, 
+      entry$datetime, type, entry$app, entry$guid, entry$activity, entry$value,
       filename = filename, delimeter = " "
       )
   }

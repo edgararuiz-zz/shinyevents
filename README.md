@@ -8,7 +8,7 @@
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![Travis build
-status](https://travis-ci.org/edgararuiz/shinyevents.svg?branch=master)](https://travis-ci.org/edgararuiz/shinyevents)
+status](https://travis-ci.com/edgararuiz/shinyevents.svg?branch=master)](https://travis-ci.org/edgararuiz/shinyevents)
 [![Codecov test
 coverage](https://codecov.io/gh/edgararuiz/shinyevents/branch/master/graph/badge.svg)](https://codecov.io/gh/edgararuiz/shinyevents?branch=master)
 <!-- badges: end -->
@@ -76,7 +76,7 @@ can be accessed in one of many ways. In this case we’ll just use
 
 ``` r
 readLines("shiny-events.log")
-#> [1] "fbe888b7-2996-4afe-a5ea-375160172bbb shinyevents example readme 2019-09-03 16:05:10 CDT INFO"
+#> [1] "2019-09-03 16:24:21 CDT INFO shinyevents 1da09552-1ebf-4581-a00a-e144a2891680 example readme"
 ```
 
 A Globally Unique Identifier, or GUID, is created by
@@ -92,10 +92,10 @@ tracker$event("stop_app")
 
 ``` r
 readLines("shiny-events.log")
-#> [1] "fbe888b7-2996-4afe-a5ea-375160172bbb shinyevents example readme 2019-09-03 16:05:10 CDT INFO"
-#> [2] "fbe888b7-2996-4afe-a5ea-375160172bbb shinyevents start_app  2019-09-03 16:05:10 CDT INFO"    
-#> [3] "fbe888b7-2996-4afe-a5ea-375160172bbb shinyevents slider 3 2019-09-03 16:05:10 CDT INFO"      
-#> [4] "fbe888b7-2996-4afe-a5ea-375160172bbb shinyevents stop_app  2019-09-03 16:05:10 CDT INFO"
+#> [1] "2019-09-03 16:24:21 CDT INFO shinyevents 1da09552-1ebf-4581-a00a-e144a2891680 example readme"
+#> [2] "2019-09-03 16:24:21 CDT INFO shinyevents 1da09552-1ebf-4581-a00a-e144a2891680 start_app "    
+#> [3] "2019-09-03 16:24:21 CDT INFO shinyevents 1da09552-1ebf-4581-a00a-e144a2891680 slider 3"      
+#> [4] "2019-09-03 16:24:21 CDT INFO shinyevents 1da09552-1ebf-4581-a00a-e144a2891680 stop_app "
 ```
 
 ## In a Shiny app
@@ -151,17 +151,17 @@ entries.
 readLines("shiny-events.log")
 ```
 
-``` 
- [1] "2019-09-02 10:11:03 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f app_initiated  "  
- [2] "2019-09-02 10:11:03 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_started 30 " 
- [3] "2019-09-02 10:11:03 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_rendered 30 "
- [4] "2019-09-02 10:11:04 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f bin_slider 44 "   
- [5] "2019-09-02 10:11:05 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_started 44 " 
- [6] "2019-09-02 10:11:05 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_rendered 44 "
- [7] "2019-09-02 10:11:07 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_started 4 "  
- [8] "2019-09-02 10:11:07 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f plot_rendered 4 " 
- [9] "2019-09-02 10:11:07 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f bin_slider 4 "    
-[10] "2019-09-02 10:11:08 CDT INFO shinyevents 56d89a96-9548-4713-b1e9-12c87e3de60f close_app  "   
+``` r
+##  [1] "2019-09-03 16:22:17 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 app_initiated "  
+##  [2] "2019-09-03 16:22:17 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 plot_started 30" 
+##  [3] "2019-09-03 16:22:17 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 plot_rendered 30"
+##  [4] "2019-09-03 16:22:20 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 bin_slider 19"   
+##  [5] "2019-09-03 16:22:20 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 plot_started 19" 
+##  [6] "2019-09-03 16:22:20 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 plot_rendered 19"
+##  [7] "2019-09-03 16:22:22 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 plot_started 41" 
+##  [8] "2019-09-03 16:22:22 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 plot_rendered 41"
+##  [9] "2019-09-03 16:22:22 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 bin_slider 41"   
+## [10] "2019-09-03 16:22:24 CDT INFO shinyevents ff55ea39-7d8a-4e5f-9f33-18ee804b2218 close_app "      
 ```
 
 ## Further info
@@ -180,7 +180,7 @@ tracking. Two of these are:
 tracker$app
 #> [1] "shinyevents"
 tracker$guid
-#> [1] "fbe888b7-2996-4afe-a5ea-375160172bbb"
+#> [1] "1da09552-1ebf-4581-a00a-e144a2891680"
 ```
 
 The `entry()` function returns a `list` object. The list contains the
@@ -191,13 +191,13 @@ function that the `shiny_events_to_log()`, `shiny_events_to_csv()` and
 ``` r
 tracker$entry()
 #> $guid
-#> [1] "fbe888b7-2996-4afe-a5ea-375160172bbb"
+#> [1] "1da09552-1ebf-4581-a00a-e144a2891680"
 #> 
 #> $app
 #> [1] "shinyevents"
 #> 
 #> $datetime
-#> [1] "2019-09-03 16:05:10 CDT"
+#> [1] "2019-09-03 16:24:21 CDT"
 #> 
 #> $activity
 #> [1] ""
@@ -225,7 +225,7 @@ tracker$event <- function(activity = "", value = "") {
 }
 tracker$event("example", "readme")
 readLines("shinyevents-pipe.txt")
-#> [1] "a4d46e65-aa7c-4024-81ab-99f52c1c6acb|2019-09-03 16:05:10 CDT|shinyevents|example|readme|"
+#> [1] "f929c79d-1e7d-4649-a8c3-c8fbf7794d91|2019-09-03 16:24:21 CDT|shinyevents|example|readme|"
 ```
 
 ## CSV example
@@ -251,13 +251,13 @@ read.csv(
   col.names = c("guid", "app", "activity", "value", "datetime")
 )
 #>                                   guid         app  activity value
-#> 1 7d0a7d26-8422-40d1-916f-8300bb035b2f shinyevents start_app    NA
-#> 2 7d0a7d26-8422-40d1-916f-8300bb035b2f shinyevents    slider     3
-#> 3 7d0a7d26-8422-40d1-916f-8300bb035b2f shinyevents  stop_app    NA
+#> 1 a90c5b13-cdfa-442c-aa51-0c5e8f65fe56 shinyevents start_app    NA
+#> 2 a90c5b13-cdfa-442c-aa51-0c5e8f65fe56 shinyevents    slider     3
+#> 3 a90c5b13-cdfa-442c-aa51-0c5e8f65fe56 shinyevents  stop_app    NA
 #>                  datetime
-#> 1 2019-09-03 16:05:10 CDT
-#> 2 2019-09-03 16:05:11 CDT
-#> 3 2019-09-03 16:05:11 CDT
+#> 1 2019-09-03 16:24:21 CDT
+#> 2 2019-09-03 16:24:21 CDT
+#> 3 2019-09-03 16:24:21 CDT
 ```
 
 ## Database example
@@ -292,9 +292,9 @@ tracker$event("stop_app")
 ``` r
 dbGetQuery(con, "SELECT * FROM shinyevents")
 #>                                   guid         app                datetime
-#> 1 b9529c5a-f7dd-4f15-90d4-29fb2c0aeaa1 shinyevents 2019-09-03 16:05:11 CDT
-#> 2 b9529c5a-f7dd-4f15-90d4-29fb2c0aeaa1 shinyevents 2019-09-03 16:05:11 CDT
-#> 3 b9529c5a-f7dd-4f15-90d4-29fb2c0aeaa1 shinyevents 2019-09-03 16:05:12 CDT
+#> 1 b62911a6-4ef2-4220-8a7e-e0b9eda70aca shinyevents 2019-09-03 16:24:23 CDT
+#> 2 b62911a6-4ef2-4220-8a7e-e0b9eda70aca shinyevents 2019-09-03 16:24:23 CDT
+#> 3 b62911a6-4ef2-4220-8a7e-e0b9eda70aca shinyevents 2019-09-03 16:24:23 CDT
 #>    activity value
 #> 1 start_app      
 #> 2    slider     3
@@ -325,10 +325,10 @@ tracker$event("data_frame", "0", "warn")
 tracker$event("stop_app")
 
 readLines(t)
-#> [1] "INFO [2019-09-03 16:05:12] f0077060-1cff-4a31-bb12-82f6d27ca95b shinyevents start_app "  
-#> [2] "INFO [2019-09-03 16:05:12] f0077060-1cff-4a31-bb12-82f6d27ca95b shinyevents slider 3"    
-#> [3] "WARN [2019-09-03 16:05:12] f0077060-1cff-4a31-bb12-82f6d27ca95b shinyevents data_frame 0"
-#> [4] "INFO [2019-09-03 16:05:12] f0077060-1cff-4a31-bb12-82f6d27ca95b shinyevents stop_app "
+#> [1] "INFO [2019-09-03 16:24:23] 3e590609-5e2d-42df-8085-6bf2c3742f85 shinyevents start_app "  
+#> [2] "INFO [2019-09-03 16:24:23] 3e590609-5e2d-42df-8085-6bf2c3742f85 shinyevents slider 3"    
+#> [3] "WARN [2019-09-03 16:24:23] 3e590609-5e2d-42df-8085-6bf2c3742f85 shinyevents data_frame 0"
+#> [4] "INFO [2019-09-03 16:24:23] 3e590609-5e2d-42df-8085-6bf2c3742f85 shinyevents stop_app "
 ```
 
 ## Sample apps
