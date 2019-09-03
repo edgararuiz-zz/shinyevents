@@ -41,3 +41,12 @@ test_that("shiny_events_to_dbi()", {
   tracker <- shiny_events_to_dbi()
   expect_is(tracker$entry(), "list")
 })
+
+context("shiny_events_to_logger()")
+library(logger)
+test_that("shiny_events_to_logger()", {
+  tracker <- shiny_events_to_logger("example-app")
+  log_output <-  capture.output(tracker$event("activity", "value"))
+  expect_is(tracker$entry(), "list")
+  expect_equal(nchar(log_output), 90)
+})

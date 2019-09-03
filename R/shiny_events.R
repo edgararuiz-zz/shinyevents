@@ -16,7 +16,7 @@
 #'   entry <- tracker$entry(activity = activity, value = value)
 #'   cat(
 #'     paste(
-#'       entry$guid, entry$datetime, entry$app, entry$activity, entry$value, "\n, sep = "|"
+#'       entry$guid, entry$datetime, entry$app, entry$activity, entry$value, "\n", sep = "|"
 #'     ),
 #'     file = file_name, append = TRUE
 #'   )
@@ -141,4 +141,26 @@ event_to_dbi <- function(connection, table, entry) {
   DBI::dbWriteTable(
     conn = connection, name = table, append = TRUE,
     value = as.data.frame(entry, stringsAsFactors = FALSE))
+}
+
+# logger -------------------------------------------
+#' Record Shiny events using the logger package
+#'
+#' @param app The name of the app. Defaults to the name of the script's containing folder.
+#'
+#' @return An environment variable containing: a GUID, the name of the app, entry() function and event() function.
+#'
+#' @export
+shiny_events_to_logger <- function(app = basename(getwd())) {
+  se <- shiny_events(app = app)
+  se$event <- function(activity = NULL, value =  NULL, 
+                       type = c("info", "success", "error", "warn", "fatal", "trace")
+                       ) {
+    entry <- se$entry(activity = activity, value = value)
+    log_txt <- paste(
+      entry$guid, entry$app, entry$activity, entry$value
+    )
+    rlang::exec(paste0("log_", type[1]), log_txt)
+  }
+  se
 }

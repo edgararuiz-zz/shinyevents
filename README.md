@@ -20,6 +20,7 @@ coverage](https://codecov.io/gh/edgararuiz/shinyevents/branch/master/graph/badge
       - [Custom event](#custom-event)
   - [CSV example](#csv-example)
   - [Database example](#database-example)
+  - [`logger` example](#example-using-logger)
   - [Sample apps](#sample-apps)
 
 `shinyevents` provides a flexible and easy to use framework to record
@@ -40,13 +41,15 @@ remotes::install_github("edgararuiz/shinyevents")
 ## Usage
 
 `shinyevents` attempts to provide a simple way to track different Shiny
-events by using two functions. The first function is one of three which
+events by using two functions. The first function is one of four which
 initialize the tracking:
 
   - `shiny_events_to_log()` - Saves the event data into a `.log` file
   - `shiny_events_to_csv()` - Saves the event data into a `.csv` file
   - `shiny_events_to_dbi()` - Saves the event data into a database, via
     the `DBI` package
+  - `shiny_events_to_logger()` - Sends the event as an entry to the
+    `logger` package
 
 Once the target for the event tracking is chosen, `shinyevents` is
 initialized by assigning the function’s result to a variable:
@@ -73,7 +76,7 @@ can be accessed in one of many ways. In this case we’ll just use
 
 ``` r
 readLines("shiny-events.log")
-#> [1] "2019-09-02 16:19:51 CDT INFO shinyevents 85743fad-3b4a-44c3-be8e-af42686b1a3f example readme "
+#> [1] "fbe888b7-2996-4afe-a5ea-375160172bbb shinyevents example readme 2019-09-03 16:05:10 CDT INFO"
 ```
 
 A Globally Unique Identifier, or GUID, is created by
@@ -89,10 +92,10 @@ tracker$event("stop_app")
 
 ``` r
 readLines("shiny-events.log")
-#> [1] "2019-09-02 16:19:51 CDT INFO shinyevents 85743fad-3b4a-44c3-be8e-af42686b1a3f example readme "
-#> [2] "2019-09-02 16:19:51 CDT INFO shinyevents 85743fad-3b4a-44c3-be8e-af42686b1a3f start_app  "    
-#> [3] "2019-09-02 16:19:51 CDT INFO shinyevents 85743fad-3b4a-44c3-be8e-af42686b1a3f slider 3 "      
-#> [4] "2019-09-02 16:19:51 CDT INFO shinyevents 85743fad-3b4a-44c3-be8e-af42686b1a3f stop_app  "
+#> [1] "fbe888b7-2996-4afe-a5ea-375160172bbb shinyevents example readme 2019-09-03 16:05:10 CDT INFO"
+#> [2] "fbe888b7-2996-4afe-a5ea-375160172bbb shinyevents start_app  2019-09-03 16:05:10 CDT INFO"    
+#> [3] "fbe888b7-2996-4afe-a5ea-375160172bbb shinyevents slider 3 2019-09-03 16:05:10 CDT INFO"      
+#> [4] "fbe888b7-2996-4afe-a5ea-375160172bbb shinyevents stop_app  2019-09-03 16:05:10 CDT INFO"
 ```
 
 ## In a Shiny app
@@ -177,7 +180,7 @@ tracking. Two of these are:
 tracker$app
 #> [1] "shinyevents"
 tracker$guid
-#> [1] "85743fad-3b4a-44c3-be8e-af42686b1a3f"
+#> [1] "fbe888b7-2996-4afe-a5ea-375160172bbb"
 ```
 
 The `entry()` function returns a `list` object. The list contains the
@@ -188,13 +191,13 @@ function that the `shiny_events_to_log()`, `shiny_events_to_csv()` and
 ``` r
 tracker$entry()
 #> $guid
-#> [1] "85743fad-3b4a-44c3-be8e-af42686b1a3f"
+#> [1] "fbe888b7-2996-4afe-a5ea-375160172bbb"
 #> 
 #> $app
 #> [1] "shinyevents"
 #> 
 #> $datetime
-#> [1] "2019-09-02 16:19:51 CDT"
+#> [1] "2019-09-03 16:05:10 CDT"
 #> 
 #> $activity
 #> [1] ""
@@ -222,7 +225,7 @@ tracker$event <- function(activity = "", value = "") {
 }
 tracker$event("example", "readme")
 readLines("shinyevents-pipe.txt")
-#> [1] "a94557cd-6762-4545-9dc9-ed2a7d4541ae|2019-09-02 16:19:51 CDT|shinyevents|example|readme|"
+#> [1] "a4d46e65-aa7c-4024-81ab-99f52c1c6acb|2019-09-03 16:05:10 CDT|shinyevents|example|readme|"
 ```
 
 ## CSV example
@@ -248,13 +251,13 @@ read.csv(
   col.names = c("guid", "app", "activity", "value", "datetime")
 )
 #>                                   guid         app  activity value
-#> 1 5217d0af-e29d-4ecc-8920-4c5858fdaf33 shinyevents start_app    NA
-#> 2 5217d0af-e29d-4ecc-8920-4c5858fdaf33 shinyevents    slider     3
-#> 3 5217d0af-e29d-4ecc-8920-4c5858fdaf33 shinyevents  stop_app    NA
+#> 1 7d0a7d26-8422-40d1-916f-8300bb035b2f shinyevents start_app    NA
+#> 2 7d0a7d26-8422-40d1-916f-8300bb035b2f shinyevents    slider     3
+#> 3 7d0a7d26-8422-40d1-916f-8300bb035b2f shinyevents  stop_app    NA
 #>                  datetime
-#> 1 2019-09-02 16:19:51 CDT
-#> 2 2019-09-02 16:19:51 CDT
-#> 3 2019-09-02 16:19:51 CDT
+#> 1 2019-09-03 16:05:10 CDT
+#> 2 2019-09-03 16:05:11 CDT
+#> 3 2019-09-03 16:05:11 CDT
 ```
 
 ## Database example
@@ -289,9 +292,9 @@ tracker$event("stop_app")
 ``` r
 dbGetQuery(con, "SELECT * FROM shinyevents")
 #>                                   guid         app                datetime
-#> 1 217fcd67-dd9e-4d0f-aa4e-75bfa866b136 shinyevents 2019-09-02 16:19:52 CDT
-#> 2 217fcd67-dd9e-4d0f-aa4e-75bfa866b136 shinyevents 2019-09-02 16:19:52 CDT
-#> 3 217fcd67-dd9e-4d0f-aa4e-75bfa866b136 shinyevents 2019-09-02 16:19:52 CDT
+#> 1 b9529c5a-f7dd-4f15-90d4-29fb2c0aeaa1 shinyevents 2019-09-03 16:05:11 CDT
+#> 2 b9529c5a-f7dd-4f15-90d4-29fb2c0aeaa1 shinyevents 2019-09-03 16:05:11 CDT
+#> 3 b9529c5a-f7dd-4f15-90d4-29fb2c0aeaa1 shinyevents 2019-09-03 16:05:12 CDT
 #>    activity value
 #> 1 start_app      
 #> 2    slider     3
@@ -300,6 +303,32 @@ dbGetQuery(con, "SELECT * FROM shinyevents")
 
 ``` r
 dbDisconnect(con)
+```
+
+## Example using `logger`
+
+To combine with the `logger` package, simply use
+`shiny_events_to_logger()`. The `log_appender()` function should be
+initialized before running the first `event()` function.
+
+``` r
+library(logger)
+
+t <- tempfile()
+
+log_appender(appender_file(t))
+
+tracker <- shiny_events_to_logger()
+tracker$event("start_app")
+tracker$event("slider", "3")
+tracker$event("data_frame", "0", "warn")
+tracker$event("stop_app")
+
+readLines(t)
+#> [1] "INFO [2019-09-03 16:05:12] f0077060-1cff-4a31-bb12-82f6d27ca95b shinyevents start_app "  
+#> [2] "INFO [2019-09-03 16:05:12] f0077060-1cff-4a31-bb12-82f6d27ca95b shinyevents slider 3"    
+#> [3] "WARN [2019-09-03 16:05:12] f0077060-1cff-4a31-bb12-82f6d27ca95b shinyevents data_frame 0"
+#> [4] "INFO [2019-09-03 16:05:12] f0077060-1cff-4a31-bb12-82f6d27ca95b shinyevents stop_app "
 ```
 
 ## Sample apps

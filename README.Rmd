@@ -32,6 +32,7 @@ if(file.exists("shinyevents-pipe.txt")) unlink("shinyevents-pipe.txt")
     -   [Custom event](#custom-event)
 -   [CSV example](#csv-example)
 -   [Database example](#database-example)
+-   [`logger` example](#example-using-logger)
 -   [Sample apps](#sample-apps)
 
 `shinyevents` provides a flexible and easy to use framework to record activity occurring withing a Shiny app. The logged information can be accumulated and later be used to help improve the app's performance and user's experience.
@@ -48,11 +49,12 @@ remotes::install_github("edgararuiz/shinyevents")
 
 ## Usage
 
-`shinyevents` attempts to provide a simple way to track different Shiny events by using two functions.  The first function is one of three which initialize the tracking:
+`shinyevents` attempts to provide a simple way to track different Shiny events by using two functions.  The first function is one of four which initialize the tracking:
 
 - `shiny_events_to_log()` - Saves the event data into a `.log` file
 - `shiny_events_to_csv()` - Saves the event data into a `.csv` file
 - `shiny_events_to_dbi()` - Saves the event data into a database, via the `DBI` package
+- `shiny_events_to_logger()` - Sends the event as an entry to the `logger` package
 
 Once the target for the event tracking is chosen, `shinyevents` is initialized by assigning the function's result to a variable:
 
@@ -233,6 +235,26 @@ dbGetQuery(con, "SELECT * FROM shinyevents")
 
 ```{r}
 dbDisconnect(con)
+```
+
+## Example using `logger`
+
+To combine with the `logger` package, simply use `shiny_events_to_logger()`.  The `log_appender()` function should be initialized before running the first `event()` function.
+
+```{r}
+library(logger)
+
+t <- tempfile()
+
+log_appender(appender_file(t))
+
+tracker <- shiny_events_to_logger()
+tracker$event("start_app")
+tracker$event("slider", "3")
+tracker$event("data_frame", "0", "warn")
+tracker$event("stop_app")
+
+readLines(t)
 ```
 
 
