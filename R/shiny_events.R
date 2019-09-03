@@ -66,25 +66,17 @@ shiny_events_to_csv <- function(app = basename(getwd()), filename = "shiny-event
   se <- shiny_events(app = app)
   se$event <- function(activity = "", value = "") {
     entry <- se$entry(activity = activity, value = value)
-    event_to_csv(
-      sessionid = entry$guid,
-      app = entry$app,
-      activity = entry$activity,
-      value = entry$value,
-      time = entry$datetime,
-      filename = filename
-    )
+    event_to_file(
+      entry$guid, entry$app, entry$activity, entry$value, entry$datetime, 
+      filename = filename, delimeter = ","
+      )
   }
   se
 }
 
-event_to_csv <- function(sessionid, app, activity,
-                         value, time, filename) {
+event_to_file <- function(filename = NULL, delimeter = NULL, ...) {
   cat(
-    paste0(
-      sessionid, ",", app, ",", activity, ",",
-      value, ",", time, "\n"
-    ),
+    paste0(paste(..., sep = delimeter), "\n"),
     file = filename,
     append = TRUE
   )
@@ -111,29 +103,12 @@ shiny_events_to_log <- function(app = basename(getwd()), filename = "shiny-event
   se <- shiny_events(app = app)
   se$event <- function(activity = "", value = "", type = "INFO") {
     entry <- se$entry(activity = activity, value = value)
-    event_to_log(
-      sessionid = entry$guid,
-      app = entry$app,
-      activity = entry$activity,
-      value = entry$value,
-      time = entry$datetime,
-      type = type,
-      filename = filename
-    )
+    event_to_file(
+      entry$guid, entry$app, entry$activity, entry$value, entry$datetime, type, 
+      filename = filename, delimeter = " "
+      )
   }
   se
-}
-
-event_to_log <- function(sessionid, app, activity,
-                         value, time, type, filename) {
-  cat(
-    paste0(
-      time, " ", type, " ", app, " ", sessionid, " ",
-      activity, " ", value, " ", "\n"
-    ),
-    file = filename,
-    append = TRUE
-  )
 }
 
 # dbi -------------------------------------------
