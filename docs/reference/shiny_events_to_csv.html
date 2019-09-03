@@ -8,11 +8,13 @@
 
 <title>Record Shiny events on a CSV file — shiny_events_to_csv • shinyevents</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -30,10 +32,11 @@
 
 
 
-<meta property="og:title" content="Record Shiny events on a CSV file — shiny_events_to_csv" />
 
+<meta property="og:title" content="Record Shiny events on a CSV file — shiny_events_to_csv" />
 <meta property="og:description" content="Record Shiny events on a CSV file" />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -79,7 +82,6 @@
   <a href="../reference/index.html">Reference</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/edgararuiz/shinyevents">
@@ -105,14 +107,12 @@
     </div>
 
     <div class="ref-description">
-    
     <p>Record Shiny events on a CSV file</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>shiny_events_to_csv</span>(<span class='kw'>app</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/basename'>basename</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/getwd'>getwd</a></span>()),
   <span class='kw'>filename</span> <span class='kw'>=</span> <span class='st'>"shiny-events.csv"</span>)</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -125,11 +125,10 @@
       <td><p>CSV file name to use. Defaults to "shiny-events.csv"</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>An environment variable containing: a GUID, the name of the app, entry() function and event() function.</p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
@@ -141,17 +140,15 @@
   <span class='kw'>header</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>col.names</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"guid"</span>, <span class='st'>"app"</span>, <span class='st'>"activity"</span>, <span class='st'>"value"</span>, <span class='st'>"datetime"</span>)
 )</div><div class='output co'>#&gt;                                   guid         app activity value
-#&gt; 1 0929dbe2-0df5-4d11-85e4-676ecd0c0608 example-app   slider     1
+#&gt; 1 59ba7393-45f3-4125-98c6-5bba1cc29d0b example-app   slider     1
 #&gt;                  datetime
-#&gt; 1 2019-09-02 16:41:45 CDT</div></pre>
+#&gt; 1 2019-09-03 16:27:21 CDT</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#value">Value</a></li>
-      
       <li><a href="#examples">Examples</a></li>
     </ul>
 
